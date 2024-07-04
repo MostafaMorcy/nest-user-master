@@ -1,11 +1,36 @@
+// create-user.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsEnum, ValidateNested, IsNumber } from 'class-validator';
+import { Type } from 'class-transformer';
 
-export class CreateUserDto {
+class AddressDto {
   @ApiProperty()
-  name: string;
+  @IsString()
+  city: string;
 
-  @ApiProperty({ enum: ['USER', 'ADMIN'], default: 'USER' })
-  role?: 'USER' | 'ADMIN';
+  @ApiProperty()
+  @IsNumber()
+  streetNumber: number;
 }
 
+class BasicInfoDto {
+  @ApiProperty()
+  @IsString()
+  name: string;
 
+  @ApiProperty({ type: AddressDto })
+  @ValidateNested()
+  @Type(() => AddressDto)
+  address: AddressDto;
+}
+
+export class CreateUserDto {
+  @ApiProperty({ type: BasicInfoDto })
+  @ValidateNested()
+  @Type(() => BasicInfoDto)
+  basicInfo: BasicInfoDto;
+
+  @ApiProperty({ enum: ['USER', 'ADMIN'], default: 'USER' })
+  @IsEnum(['USER', 'ADMIN'])
+  role: 'USER' | 'ADMIN';
+}

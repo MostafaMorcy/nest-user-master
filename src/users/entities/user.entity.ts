@@ -4,8 +4,17 @@ export class UserEntity {
   @ApiProperty({ example: 1, description: 'The unique identifier of the user' })
   id: number;
 
-  @ApiProperty({ example: 'John Doe', description: 'The name of the user' })
-  name: string;
+  @ApiProperty({
+    example: { name: 'John Doe', address: { city: 'New York', streetNumber: '123' } },
+    description: 'Basic information of the user',
+  })
+  basicInfo: {
+    name: string;
+    address: {
+      city: string;
+      streetNumber: string;
+    };
+  };
 
   @ApiProperty({ example: 'USER', description: 'The role of the user' })
   role: string;

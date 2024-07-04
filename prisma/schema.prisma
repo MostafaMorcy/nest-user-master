@@ -7,15 +7,18 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// schema.prisma
+model User {
+  id         Int      @id @default(autoincrement())
+  basicInfo  Json
+  role       Role     @default(USER)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
 enum Role {
   USER
   ADMIN
 }
 
-model User {
-  id         Int      @id @default(autoincrement())
-  name       String   @unique
-  role       Role     @default(USER)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-}
+

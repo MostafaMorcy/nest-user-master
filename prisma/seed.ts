@@ -1,27 +1,35 @@
-import { PrismaClient } from '@prisma/client';
+// prisma/seed.ts
+import { PrismaClient, Role } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  const user1 = await prisma.user.upsert({
-    where: { name: 'user one' },
-    update: {},
-    create: {
+  const user1Data = {
+    basicInfo: {
       name: 'user one',
-      role: 'USER',
+      address: {
+        city: 'City One',
+        streetNumber: 123,
+      },
     },
-  });
+    role: Role.USER,
+  };
 
-  const user2 = await prisma.user.upsert({
-    where: { name: 'user two' },
-    update: {},
-    create: {
+  const user2Data = {
+    basicInfo: {
       name: 'user two',
-      role: 'ADMIN',
+      address: {
+        city: 'City Two',
+        streetNumber: 456,
+      },
     },
-  });
+    role: Role.ADMIN,
+  };
 
-  console.log({ user1, user2 });
+  await prisma.user.create({ data: user1Data });
+  await prisma.user.create({ data: user2Data });
+
+  console.log('Seed data created successfully');
 }
 
 main()
