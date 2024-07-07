@@ -1,12 +1,5 @@
-/*
-  Warnings:
-
-  - You are about to drop the column `name` on the `User` table. All the data in the column will be lost.
-
-*/
--- DropIndex
-DROP INDEX "User_name_key";
-
--- AlterTable
-ALTER TABLE "User" DROP COLUMN "name",
-ADD COLUMN     "basicInfo" JSONB NOT NULL DEFAULT '{}';
+-- ModifyTimestamps
+ALTER TABLE "User"
+ALTER COLUMN "createdAt" SET DATA TYPE TIMESTAMP(3),
+ALTER COLUMN "updatedAt" DROP DEFAULT,
+ALTER COLUMN "updatedAt" SET DATA TYPE TIMESTAMP(3);

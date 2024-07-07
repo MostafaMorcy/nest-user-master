@@ -4,9 +4,7 @@ CREATE TABLE "User" (
     "name" TEXT NOT NULL,
     "createdAt" TIMESTAMP DEFAULT now() NOT NULL,
     "updatedAt" TIMESTAMP DEFAULT now() NOT NULL,
-
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
 
--- CreateIndex
 CREATE UNIQUE INDEX "User_name_key" ON "User"("name");
