@@ -1,36 +1,43 @@
-// create-user.dto.ts
+import { z } from 'zod';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsEnum, ValidateNested, IsNumber } from 'class-validator';
-import { Type } from 'class-transformer';
+
+const AddressSchema = z.object({
+  city: z.string(),
+  streetNumber: z.number(),
+});
+
+const BasicInfoSchema = z.object({
+  name: z.string(),
+  address: AddressSchema,
+});
+
+export const CreateUserDtoSchema = z.object({
+  basicInfo: BasicInfoSchema,
+  role: z.enum(['USER', 'ADMIN']).default('USER'),
+});
+
+export type CreateUserDto = z.infer<typeof CreateUserDtoSchema>;
 
 class AddressDto {
   @ApiProperty()
-  @IsString()
   city: string;
 
   @ApiProperty()
-  @IsNumber()
   streetNumber: number;
 }
 
 class BasicInfoDto {
   @ApiProperty()
-  @IsString()
   name: string;
 
   @ApiProperty({ type: AddressDto })
-  @ValidateNested()
-  @Type(() => AddressDto)
   address: AddressDto;
 }
 
-export class CreateUserDto {
+export class CreateUserDtoSwagger {
   @ApiProperty({ type: BasicInfoDto })
-  @ValidateNested()
-  @Type(() => BasicInfoDto)
   basicInfo: BasicInfoDto;
 
   @ApiProperty({ enum: ['USER', 'ADMIN'], default: 'USER' })
-  @IsEnum(['USER', 'ADMIN'])
   role: 'USER' | 'ADMIN';
 }

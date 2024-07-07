@@ -1,15 +1,16 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User } from '@prisma/client';
-import { CreateUserDto } from './create-user.dto';
-import { UpdateUserDto } from './update-user.dto';
-import { plainToInstance } from 'class-transformer';
+import { CreateUserDto, CreateUserDtoSchema } from './create-user.dto';
+import { UpdateUserDto, UpdateUserDtoSchema } from './update-user.dto';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   async create(data: CreateUserDto): Promise<User> {
+    const parsedData = CreateUserDtoSchema.parse(data);
+
     const existingUser = await this.prisma.user.findFirst({
       where: {
         basicInfo: {
@@ -25,8 +26,8 @@ export class UsersService {
 
     return this.prisma.user.create({
       data: {
-        ...data,
-        basicInfo: JSON.stringify(data.basicInfo), // Ensure JSON compatibility
+        ...parsedData,
+        basicInfo: JSON.stringify(parsedData.basicInfo),
       },
     });
   }
@@ -101,9 +102,9 @@ export class UsersService {
     }
   }
   
-  
-
   async update(id: number, data: UpdateUserDto): Promise<any> {
+    const parsedData = UpdateUserDtoSchema.parse(data);
+
     const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user) {
       throw new NotFoundException('User not found');
@@ -113,23 +114,23 @@ export class UsersService {
     
     const updatedBasicInfo = {
       ...existingBasicInfo,
-      ...data.basicInfo,
+      ...parsedData.basicInfo,
       address: {
         ...existingBasicInfo.address,
-        ...data.basicInfo?.address,
+        ...parsedData.basicInfo?.address,
       },
     };
 
     const updatedData = {
       basicInfo: updatedBasicInfo,
-      role: data.role ?? user.role,
+      role: parsedData.role ?? user.role,
     };
 
     const updatedUser = await this.prisma.user.update({
       where: { id },
       data: updatedData,
     });
-    return updatedUser
+    return updatedUser;
   }
 
   async remove(id: number): Promise<User> {

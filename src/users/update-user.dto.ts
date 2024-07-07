@@ -1,42 +1,43 @@
-// update-user.dto.ts
-import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsEnum, ValidateNested, IsString, IsNumber } from 'class-validator';
-import { Type } from 'class-transformer';
+import { z } from 'zod';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+
+const AddressSchema = z.object({
+  city: z.string().optional(),
+  streetNumber: z.number().optional(),
+});
+
+const BasicInfoSchema = z.object({
+  name: z.string().optional(),
+  address: AddressSchema.optional(),
+});
+
+export const UpdateUserDtoSchema = z.object({
+  basicInfo: BasicInfoSchema.optional(),
+  role: z.enum(['USER', 'ADMIN']).optional(),
+});
+
+export type UpdateUserDto = z.infer<typeof UpdateUserDtoSchema>;
 
 class AddressDto {
-  @ApiProperty()
-  @IsString()
-  @IsOptional()
+  @ApiPropertyOptional()
   city?: string;
 
-  @ApiProperty()
-  @IsNumber()
-  @IsOptional()
+  @ApiPropertyOptional()
   streetNumber?: number;
 }
 
 class BasicInfoDto {
-  @ApiProperty()
-  @IsString()
-  @IsOptional()
+  @ApiPropertyOptional()
   name?: string;
 
-  @ApiProperty({ type: AddressDto })
-  @ValidateNested()
-  @Type(() => AddressDto)
-  @IsOptional()
+  @ApiPropertyOptional({ type: AddressDto })
   address?: AddressDto;
 }
 
-export class UpdateUserDto {
-  @ApiProperty({ type: BasicInfoDto })
-  @ValidateNested()
-  @Type(() => BasicInfoDto)
-  @IsOptional()
+export class UpdateUserDtoSwagger {
+  @ApiPropertyOptional({ type: BasicInfoDto })
   basicInfo?: BasicInfoDto;
 
-  @ApiProperty({ enum: ['USER', 'ADMIN'] })
-  @IsEnum(['USER', 'ADMIN'])
-  @IsOptional()
+  @ApiPropertyOptional({ enum: ['USER', 'ADMIN'] })
   role?: 'USER' | 'ADMIN';
 }

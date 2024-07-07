@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, BadRequestException } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { ApiTags, ApiOperation, ApiResponse, ApiSecurity } from '@nestjs/swagger';
-import { CreateUserDto } from './create-user.dto';
-import { UpdateUserDto } from './update-user.dto';
+import { ApiTags, ApiOperation, ApiSecurity } from '@nestjs/swagger';
+import { CreateUserDtoSwagger, CreateUserDtoSchema } from './create-user.dto';
+import { UpdateUserDtoSwagger, UpdateUserDtoSchema } from './update-user.dto';
 import { ApiKeyGuard } from '../gurd/api-key.guard';
+import { ZodValidationPipe } from '../validation/zod-validation.pipe';
 
 @ApiTags('users')
 @ApiSecurity('api-key')
@@ -14,7 +15,7 @@ export class UsersController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new user' })
-  create(@Body() createUserDto: CreateUserDto) {
+  create(@Body(new ZodValidationPipe(CreateUserDtoSchema)) createUserDto: CreateUserDtoSwagger) {
     return this.usersService.create(createUserDto);
   }
 
@@ -32,7 +33,7 @@ export class UsersController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update a user by ID' })
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  update(@Param('id') id: string, @Body(new ZodValidationPipe(UpdateUserDtoSchema)) updateUserDto: UpdateUserDtoSwagger) {
     return this.usersService.update(+id, updateUserDto);
   }
 
